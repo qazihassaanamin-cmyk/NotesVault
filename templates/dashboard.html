@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Resource Dashboard</h2>
+<form action="{{ url_for('search.search') }}" method="GET" style="margin: 1rem 0; display: flex; gap: 0.5rem;">
+    <input type="text" name="q" placeholder="Search by title or subject..." style="flex: 1; padding: 0.5rem;">
+    <button type="submit" style="padding: 0.5rem 1rem;">Search</button>
+</form>
+
+<div class="card-grid">
+    {% for res in resources %}
+    <div class="card">
+        <div>
+            <span class="pill">{{ res.category.name }}</span>
+            <h3 style="margin-top: 0.5rem;">{{ res.title }}</h3>
+            <p><strong>Subject:</strong> {{ res.subject }}</p>
+            <p><small>{{ res.description }}</small></p>
+        </div>
+        <div style="margin-top: 1rem;">
+            <a href="{{ url_for('static', filename='uploads/' + res.file_path) }}" target="_blank">Download Resource</a>
+        </div>
+    </div>
+    {% else %}
+    <p>No resources found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

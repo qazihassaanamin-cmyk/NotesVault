@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Search Results for "{{ query }}"</h2>
+<a href="{{ url_for('resources.dashboard') }}">← Back to Dashboard</a>
+<div class="card-grid">
+    {% for res in resources %}
+    <div class="card">
+        <div>
+            <span class="pill">{{ res.category.name }}</span>
+            <h3 style="margin-top: 0.5rem;">{{ res.title }}</h3>
+            <p><strong>Subject:</strong> {{ res.subject }}</p>
+        </div>
+        <a href="{{ url_for('static', filename='uploads/' + res.file_path) }}" target="_blank">Download Resource</a>
+    </div>
+    {% else %}
+    <p>No matching resources found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

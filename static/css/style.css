@@ -1,0 +1,14 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; color: #333; line-height: 1.6; }
+nav { background: #1a252f; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+nav a { color: white; text-decoration: none; margin-left: 1rem; }
+.container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+.card { background: white; border-radius: 8px; padding: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+.pill { background: #007bff; color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; }
+.form-card { background: white; max-width: 500px; margin: 2rem auto; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.form-card input, .form-card select, .form-card textarea, .form-card button { width: 100%; margin-bottom: 1rem; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; }
+.form-card button { background: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
+.flash { padding: 0.8rem; margin-bottom: 1rem; border-radius: 4px; }
+.flash.danger { background: #f8d7da; color: #721c24; }
+.flash.success { background: #d4edda; color: #155724; }
