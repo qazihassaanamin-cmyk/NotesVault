@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-4" style="max-width: 700px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2>{{ resource.title }}</h2>
+            <span class="badge bg-info text-dark mb-3">{{ resource.subject }}</span>
+            <p>{{ resource.description }}</p>
+            <hr>
+
+            {% if has_access %}
+                <div class="alert alert-success">
+                    🔒 Access Unlocked!
+                </div>
+                <a href="{{ resource.resource_link }}" target="_blank" class="btn btn-success btn-lg w-100">Open Resource Link 🔗</a>
+            {% else %}
+                <div class="alert alert-warning">
+                    <h5>🔒 Premium Note Locked</h5>
+                    <p>Price: <strong>PKR {{ "%.2f"|format(resource.price) }}</strong></p>
+                    <p>Unlock access to view the full resource and download link.</p>
+                </div>
+                {% if current_user.is_authenticated %}
+                <form action="{{ url_for('resources.buy_resource', id=resource.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Unlock & Buy Note</button>
+                </form>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-secondary w-100">Log in to Purchase</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>

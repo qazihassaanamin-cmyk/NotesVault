@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-4">
+    <h2>🎓 Study Notes & Resource Marketplace</h2>
+    <p class="text-muted">Browse public notes, filter by subject, or unlock premium exam guides.</p>
+    
+    <!-- Filter Bar -->
+    <div class="mb-4">
+        <a href="{{ url_for('resources.marketplace') }}" class="btn btn-outline-secondary btn-sm">All</a>
+        <a href="{{ url_for('resources.marketplace', subject='Calculus') }}" class="btn btn-outline-primary btn-sm">Calculus</a>
+        <a href="{{ url_for('resources.marketplace', subject='Physics') }}" class="btn btn-outline-primary btn-sm">Physics</a>
+        <a href="{{ url_for('resources.marketplace', subject='Python') }}" class="btn btn-outline-primary btn-sm">Python</a>
+        <a href="{{ url_for('resources.marketplace', subject='SQL') }}" class="btn btn-outline-primary btn-sm">SQL</a>
+    </div>
+
+    <div class="row">
+        {% for resource in resources %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <span class="badge bg-info text-dark mb-2">{{ resource.subject }}</span>
+                    {% if resource.is_paid %}
+                        <span class="badge bg-warning text-dark float-end">PKR {{ "%.2f"|format(resource.price) }}</span>
+                    {% else %}
+                        <span class="badge bg-success float-end">Free</span>
+                    {% endif %}
+                    
+                    <h5 class="card-title mt-2">{{ resource.title }}</h5>
+                    <p class="card-text text-truncate">{{ resource.description }}</p>
+                    <p class="small text-muted">Uploaded by {{ resource.author.username }}</p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{{ url_for('resources.view_resource', id=resource.id) }}" class="btn btn-primary w-100">View Resource</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p>No resources found for this category yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

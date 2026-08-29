@@ -1,50 +1,45 @@
 import os
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
-from config import Config
-from models import db, User, Category
-from routes.auth import auth_bp
-from routes.resources import resources_bp
-from routes.search import search_bp
+from models import db, User
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
+# Initialize Flask application
+app = Flask(__name__)
 
-    db.init_app(app)
+# Basic Application Configuration
+app.config['SECRET_KEY'] = 'notesvault-secret-key-2026-super-secure'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///notesvault.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
+# Bind SQLAlchemy database instance to Flask app
+db.init_app(app)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+# Initialize Flask-Login Manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+login_manager.login_message_category = 'info'
 
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(resources_bp)
-    app.register_blueprint(search_bp)
+@login_manager.user_loader
+def load_user(user_id):
+    """Callback to reload user object from session user_id."""
+    return User.query.get(int(user_id))
 
-    @app.route('/')
-    def root():
-        return redirect(url_for('resources.dashboard'))
+# Import and Register Blueprints
+from routes.auth import auth as auth_blueprint
+from routes.resources import resources as resources_blueprint
 
-    with app.app_context():
-        db.create_all()
-        # Seed initial categories if empty
-        if not Category.query.first():
-            default_categories = [
-                Category(name='Calculus', description='Calculus I, II, Limits, Differentiation'),
-                Category(name='Physics', description='Mechanics, Electricity, Magnetism'),
-                Category(name='Python', description='Core Python, Flask, Algorithms'),
-                Category(name='SQL', description='Database Queries, Relational Schemas')
-            ]
-            db.session.bulk_save_objects(default_categories)
-            db.session.commit()
+app.register_blueprint(auth_blueprint, url_prefix='/auth')
+app.register_blueprint(resources_blueprint)
 
-    return app
+# Root route redirecting to marketplace
+@app.route('/')
+def home():
+    return redirect(url_for('resources.marketplace'))
 
-app = create_app()
-
+# Application Execution Entry Point
 if __name__ == '__main__':
+    with app.app_context():
+        # Auto-create database tables locally if they don't exist
+        db.create_all()
     app.run(debug=True)
