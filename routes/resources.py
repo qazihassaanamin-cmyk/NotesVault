@@ -4,7 +4,7 @@ from models import db, Resource
 
 resources = Blueprint('resources', __name__)
 
-# Public Marketplace View (Shows public free and paid note previews)
+@resources.route('/')
 @resources.route('/marketplace')
 def marketplace():
     subject_filter = request.args.get('subject')
@@ -16,7 +16,6 @@ def marketplace():
     all_resources = query.order_by(Resource.created_at.desc()).all()
     return render_template('marketplace.html', resources=all_resources)
 
-# Personal User Dashboard (Shows user's uploads + unlocked notes)
 @resources.route('/dashboard')
 @login_required
 def dashboard():
@@ -24,7 +23,6 @@ def dashboard():
     unlocked_notes = current_user.unlocked_resources
     return render_template('dashboard.html', my_notes=my_notes, unlocked_notes=unlocked_notes)
 
-# Create New Resource
 @resources.route('/resource/new', methods=['GET', 'POST'])
 @login_required
 def create_resource():
@@ -54,18 +52,15 @@ def create_resource():
 
     return render_template('create_resource.html')
 
-# View Resource Detail (Enforces Privacy & Purchase Locks)
 @resources.route('/resource/<int:id>')
 def view_resource(id):
     resource = Resource.query.get_or_404(id)
     
-    # 1. Privacy Check
     if resource.is_private:
         if not current_user.is_authenticated or resource.user_id != current_user.id:
             flash('This note is private to the owner.', 'danger')
             return redirect(url_for('resources.marketplace'))
 
-    # 2. Access Lock Check (Paid notes require ownership or purchase)
     has_access = False
     if current_user.is_authenticated:
         if resource.user_id == current_user.id or resource in current_user.unlocked_resources:
@@ -76,7 +71,6 @@ def view_resource(id):
 
     return render_template('resource_detail.html', resource=resource, has_access=has_access)
 
-# Unlock / Buy Note Action
 @resources.route('/resource/<int:id>/buy', methods=['POST'])
 @login_required
 def buy_resource(id):
@@ -87,7 +81,6 @@ def buy_resource(id):
         flash(f'Successfully unlocked "{resource.title}"!', 'success')
     return redirect(url_for('resources.view_resource', id=resource.id))
 
-# Delete Resource (Owner Only)
 @resources.route('/resource/<int:id>/delete', methods=['POST'])
 @login_required
 def delete_resource(id):
